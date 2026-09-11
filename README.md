@@ -149,117 +149,211 @@ The application will be live at **`http://localhost:5173`**.
 
 ---
 
-## 📐 4. Layout Algorithm & Multi-Stage Pipeline Architecture
+## 🏗️ 4. Visual Pipeline Architecture & Surface Wireframes
 
-### 4.1 Master 8-Stage Resolution Pipeline
+### 4.1 Visual Constraint Resolution Pipeline
 
 ```mermaid
 flowchart TD
-    subgraph S1["Stage 1: Intent & Schema Ingestion"]
-        A1["📄 Declarative AdSpec\n(Elements, Content, Roles, Priority P:1..100, Theme)"]
-        A2["🖥️ Physical Surface Profile\n(Width, Height, SafeInsets, Mode, MinTap, MinText)"]
-        A1 & A2 --> A3["🔍 Invariant Schema Validator\n(Guarantees unique IDs, valid priority ranges)"]
+    subgraph Inputs["📥 1. Inputs"]
+        A["📄 Declarative Ad Spec\n(Headline, Media, CTA, Price, Rating)"]
+        B["🖥️ Surface Profile\n(Width, Height, Safe Insets, Touch Target)"]
     end
 
-    subgraph S2["Stage 2: Spatial Budgeting & Safe Insets"]
-        A3 --> B1["📐 Hardware Safe Area Insetter\nWu = W - (L+R), Hu = H - (T+B)"]
-        B1 --> B2["📊 Continuous Aspect Ratio Calculator\nAR = Wu / Hu, Area_u = Wu × Hu"]
+    subgraph Step1["📐 2. Spatial Budgeting"]
+        C["Compute Usable Space\nWu = Width - Insets\nHu = Height - Insets\nAR = Aspect Ratio (Wu / Hu)"]
     end
 
-    subgraph S3["Stage 3: Continuous Topology Classification"]
-        B2 --> C1["🧠 Piecewise Macro Topology Selector"]
-        C1 -->|AR >= 2.8| C2["📺 banner-inline / compact-strip\n(Broadcast Lower-Third / Live Stream Strip)"]
-        C1 -->|1.3 <= AR < 2.8| C3["📱 split-horizontal\n(Landscape 16:9 / Wide Banners)"]
-        C1 -->|0.8 <= AR < 1.3| C4["🏢 quadrant-grid\n(Square Retail Kiosk 1:1)"]
-        C1 -->|AR < 0.8| C5["📱 split-vertical\n(Mobile Portrait 9:16 / Tall Stories)"]
+    subgraph Step2["🧠 3. Layout Topology Selector"]
+        D{"Aspect Ratio (AR) & Height"}
+        D1["📱 Vertical Stack\n(AR < 0.8)"]
+        D2["🏢 2×2 Quadrant Grid\n(0.8 ≤ AR < 1.3)"]
+        D3["💻 2-Column Split\n(1.3 ≤ AR < 2.8)"]
+        D4["📺 Horizontal Strip\n(AR ≥ 2.8)"]
+        D5["🔬 Compact Mini Strip\n(AR ≥ 2.8 & H < 160px)"]
     end
 
-    subgraph S4["Stage 4: Priority Degradation & Capacity Planning"]
-        C2 & C3 & C4 & C5 --> D1["⚖️ Priority Sorter\nSort elements P(100..1) descending"]
-        D1 --> D2["📉 Capacity Constraint Evaluator\nSum(MinArea) <= 0.95 × Area_u"]
-        D2 -->|Budget Exceeded| D3["❌ Evict Low-Priority Elements\n(Legal -> Brand -> Rating -> Subhead)"]
-        D2 -->|Budget OK| D4["✅ Retain Full / Compact Elements\n(Headline & CTA strictly defended)"]
+    subgraph Step3["📉 4. Smart Priority Degradation"]
+        E["Check Spatial Area Capacity\nKeep Critical Elements (CTA P=100, Headline P=95)\nDrop / Compact Secondary (Legal → Rating → Subhead → Hero)"]
     end
 
-    subgraph S5["Stage 5: Text Measurement & Typography Solver"]
-        D3 & D4 --> E1["📏 Canvas Offscreen Text Measurer\n(CanvasRenderingContext2D font metrics)"]
-        E1 --> E2["🔤 Iterative Font Sizer & Line Wrapper\n(Step down to minTextSize, apply ellipsis)"]
+    subgraph Step4["📏 5. Text Auto-Fitting & Touch Targets"]
+        F["Canvas Font Measurement\nAuto Word-Wrap & Scale Down to minTextSize\nExpand Hitboxes to ≥ 44px (WCAG 2.5.5)"]
     end
 
-    subgraph S6["Stage 6: Slot Allocation & Collision-Free Packing"]
-        E2 --> F1["📦 Slot Coordinate Allocator\n(Assigns absolute x, y, width, height)"]
-        F1 --> F2["🛡️ AABB Collision Detection Engine\n(Mathematically guarantees 0 overlaps)"]
+    subgraph Output["🌳 6. Resolved Layout AST"]
+        G["📦 Pixel-Perfect Geometry Array\n[{ x, y, width, height, fontSize, isTruncated, tapBounds }]"]
     end
 
-    subgraph S7["Stage 7: WCAG 2.5.5 Accessibility Synthesizer"]
-        F2 --> G1["👆 Touch Target Synthesizer\n(Expands CTA interactive hitbox to >=44px)"]
-        G1 --> G2["🌳 ResolvedLayout AST Output\n(Nodes, Computed Metrics, Diagnostic Audit Log)"]
+    subgraph Renderers["🎨 7. Dual Renderers"]
+        H["🌐 React DOM\n(Glassmorphism & FLIP Transitions)"]
+        I["🎨 HTML5 Canvas 2D\n(Retina Buffer & Zero DOM)"]
     end
 
-    subgraph S8["Stage 8: Decoupled Dual Rendering Backends"]
-        G2 --> H1["🌐 React DOM / CSS Renderer\n(Glassmorphism, 400ms FLIP morph, confetti)"]
-        G2 --> H2["🎨 HTML5 Canvas 2D Renderer\n(Retina DPR buffer, standalone canvas)"]
-        G2 --> H3["🔮 Future WebGL / 3D Spatial\n(Direct AR mesh projection)"]
-    end
+    A & B --> C
+    C --> D
+    D --> D1 & D2 & D3 & D4 & D5
+    D1 & D2 & D3 & D4 & D5 --> E
+    E --> F
+    F --> G
+    G --> H & I
 
-    classDef stageStyle fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc;
-    classDef nodeStyle fill:#1e1b4b,stroke:#818cf8,stroke-width:1px,color:#e0e7ff;
-    class S1,S2,S3,S4,S5,S6,S7,S8 stageStyle;
+    style Inputs fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style Step1 fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style Step2 fill:#312e81,stroke:#a78bfa,stroke-width:2px,color:#f8fafc
+    style Step3 fill:#4c1d95,stroke:#c084fc,stroke-width:2px,color:#f8fafc
+    style Step4 fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#f8fafc
+    style Output fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#f8fafc
+    style Renderers fill:#701a75,stroke:#f472b6,stroke-width:2px,color:#f8fafc
 ```
 
 ---
 
-### 📊 Comprehensive Pipeline Component Reference Table
+### 📱 4.2 Visual Layout Wireframes Across All 5 Surfaces
 
-| Stage # | Pipeline Subsystem | Input Data | Core Mathematical / Algorithmic Operation | Output Intermediate Artifact | Invariants & Guarantees |
-|:---:|:---|:---|:---|:---|:---|
-| **1** | **Schema Ingestion & Validation** | Raw AdSpec, SurfaceProfile | Validates unique element IDs, bounds priority to $[1, 100]$, verifies required conversion roles. | Normalized `AdSpec`, `SurfaceProfile` | Throws compile/runtime errors on invalid combinations. |
-| **2** | **Spatial Budgeting** | Surface Dimensions, Insets | Subtracts safe insets: $W_u = W_s - (L+R)$, $H_u = H_s - (T+B)$, $\text{AR} = \frac{W_u}{H_u}$. | `safeBounds` $(x, y, W_u, H_u)$, `AR` | $W_u > 0, H_u > 0$; safe insets never breached. |
-| **3** | **Topology Classification** | Usable $\text{AR}, H_u$ | Continuous piecewise mapping into `banner-inline`, `split-horizontal`, `quadrant-grid`, `split-vertical`. | `TopologyAnalysis` object | Pure continuous function; zero hardcoded surface strings. |
-| **4** | **Priority Degradation** | Normalized Elements, $\text{Area}_u$ | Priority-ranked greedy evaluation; systematically evicts low priority if $\sum \text{MinArea} > 0.95 \cdot \text{Area}_u$. | Active `RetainedElements[]`, `DroppedElements[]` | Headline ($P=95$) and CTA ($P=100$) **never dropped**. |
-| **5** | **Text Measurement** | Raw Copy, Candidate Width | Offscreen Canvas 2D font metric calculation; iterative line wrapping down to `minTextSize`. | `TextMeasureResult` (lines, font size, height) | Minimum font size strictly respected per viewing distance. |
-| **6** | **Collision-Free Packing** | Slot Budgets, Measured Text | Assigns absolute coordinates $(x, y, w, h)$ with boundary clamping and margin budgeting. | `ResolvedNode[]` with absolute coordinates | Axis-Aligned Bounding Box (AABB) intersection $= \text{False}$. |
-| **7** | **WCAG Touch Synthesizer** | Active CTA Nodes, `minTapTarget` | Calculates symmetrical hit padding: $\text{pad} = \max(0, \frac{\text{minTap} - \text{dim}}{2})$. | `tapTargetBounds` $(\ge 44\text{px}\times 44\text{px})$ | WCAG 2.5.5 touch target compliance $= \text{Pass}$. |
-| **8** | **Dual Rendering Bridge** | `ResolvedLayout` AST | Decoupled consumption by React DOM (FLIP animations) and HTML5 Canvas 2D (Retina buffer). | Rendered UI / Canvas Elements | Zero layout calculations occur in rendering backends. |
+The single declarative ad specification automatically adapts its visual composition into 5 distinct topologies:
 
-### 4.2 Mathematical Topology Classification
-The macro layout topology $T$ is derived continuously from the usable aspect ratio ($\text{AR} = \frac{W_u}{H_u}$):
-
-$$T(\text{AR}, H_u) = \begin{cases} 
-\text{compact-strip} & \text{if } \text{AR} \ge 2.8 \land H_u < 160\text{px} \\
-\text{banner-inline} & \text{if } \text{AR} \ge 2.8 \land H_u \ge 160\text{px} \\
-\text{split-horizontal} & \text{if } 1.3 \le \text{AR} < 2.8 \\
-\text{quadrant-grid} & \text{if } 0.8 \le \text{AR} < 1.3 \\
-\text{split-vertical} & \text{if } \text{AR} < 0.8 
-\end{cases}$$
-
-### 4.3 Priority & Degradation Logic
-Elements carry a priority weight $P \in [1, 100]$. When usable canvas area is constrained, the degradation engine executes:
+<table>
+<tr>
+<th width="20%">📱 Mobile Portrait<br/><code>390 × 844 (9:16)</code></th>
+<th width="25%">💻 Mobile Landscape<br/><code>844 × 390 (16:9)</code></th>
+<th width="25%">📺 Broadcast Lower-Third<br/><code>1200 × 190 (32:5)</code></th>
+<th width="15%">🏢 Square Kiosk<br/><code>600 × 600 (1:1)</code></th>
+<th width="15%">🔬 Nano Ad<br/><code>300 × 130 (2.3:1)</code></th>
+</tr>
+<tr>
+<td valign="top">
 
 ```
-Priority Ranking Hierarchy:
-100  [CTA Action Button]     ═══════════════════════════► NEVER DROPPED (Conversion Anchor)
-95   [Headline Title]        ═══════════════════════════► NEVER DROPPED (Value Proposition)
-85   [Hero Media Visual]     ═══════════════════════════► Scaled down / Dropped on micro panels
-75   [Price & Discount Tag]  ═══════════════════════════► Preserved adjacent to CTA
-60   [Callout Pill Badge]    ═══════════════════════════► Compacted to micro tag
-50   [Subhead Copy]          ═══════════════════════════► Compacted / Dropped if height < 400px
-40   [Social Proof Rating]   ═══════════════════════════► Dropped on compact viewports
-35   [Branding Logo/Mark]    ═══════════════════════════► Compacted to icon-only / Dropped
-15   [Legal Disclaimer]      ═══════════════════════════► DROPPED FIRST under budget constraint
+┌──────────────────┐
+│  BRAND   | BADGE │
+├──────────────────┤
+│                  │
+│    HERO MEDIA    │
+│    (Top 45%)     │
+│                  │
+├──────────────────┤
+│ ★★★★☆ (Rating)   │
+│ HEADLINE TITLE   │
+│ Subhead copy...  │
+├──────────────────┤
+│ $799  │ [CTA →]  │
+│ © Legal Notice   │
+└──────────────────┘
+```
+<b>Topology:</b> Vertical Stack  
+<b>Focus:</b> Hero Visual & Thumb Action
+
+</td>
+<td valign="top">
+
+```
+┌──────────────┬───────────────────┐
+│              │ BRAND     ★★★★☆   │
+│  HERO MEDIA  ├───────────────────┤
+│  (Left 44%)  │ HEADLINE TITLE    │
+│              │ Subhead copy text │
+│  [ BADGE ]   ├───────────────────┤
+│              │ $799  │ [ CTA → ] │
+└──────────────┴───────────────────┘
+```
+<b>Topology:</b> 2-Column Split  
+<b>Focus:</b> Side-by-Side Narrative
+
+</td>
+<td valign="top">
+
+```
+┌──────┬───────┬──────────────┬──────┬─────────┐
+│MEDIA │ BRAND │ HEADLINE     │$799  │ [ CTA →]│
+│THUMB │ & TAG │ Subhead copy │SAVE  │ (Action)│
+└──────┴───────┴──────────────┴──────┴─────────┘
+```
+<b>Topology:</b> Horizontal Strip  
+<b>Focus:</b> Ultra-Wide Overlay, $\ge 18\text{px}$ Font
+
+</td>
+<td valign="top">
+
+```
+┌──────────────────┐
+│   HERO MEDIA     │
+│   (Top Half)     │
+├─────────┬────────┤
+│HEADLINE │  $799  │
+│Subhead  │ [CTA →]│
+└─────────┴────────┘
+```
+<b>Topology:</b> 2×2 Grid  
+<b>Focus:</b> Big Touch CTA
+
+</td>
+<td valign="top">
+
+```
+┌──────────────────┐
+│ HEADLINE TITLE   │
+├─────────┬────────┤
+│  $799   │[CTA →] │
+└─────────┴────────┘
+```
+<b>Topology:</b> Compact Strip  
+<b>Focus:</b> Direct Conversion
+
+</td>
+</tr>
+</table>
+
+---
+
+### 📉 4.3 Priority Degradation Visual Hierarchy
+
+When display dimensions or aspect ratios shrink, secondary elements drop progressively to preserve conversion anchors:
+
+```
+[Level 1: Full Experience] ──► Retains all 9 elements (Hero, Headline, Subhead, Price, CTA, Rating, Brand, Badge, Legal)
+        │
+        ▼ (Space < 500px Height)
+[Level 2: Legal Trimmed]   ──► Legal Disclaimer dropped (P=15)
+        │
+        ▼ (Space < 400px Height)
+[Level 3: Social Trimmed]  ──► Social Rating dropped (P=40), Brand compacted (P=35)
+        │
+        ▼ (Space < 250px Height)
+[Level 4: Subhead Trimmed] ──► Subhead copy dropped (P=50), Badge compacted (P=60)
+        │
+        ▼ (Micro Panel < 150px)
+[Level 5: Conversion Core] ──► Hero Media dropped (P=85) ──► 100% Width given to Headline (P=95) + Price + CTA (P=100)
 ```
 
-#### Degradation Cascade Rule:
-$$\sum_{i=1}^{k} \text{MinArea}(e_i) \le 0.95 \cdot (W_u \times H_u)$$
-If the condition is violated, elements are dropped in ascending order of priority, strictly guaranteeing that Headline ($P=95$) and CTA ($P=100$) are defended.
+| Element Role | Priority ($P$) | Survival Policy | Visual Behavior When Space Shrinks |
+|---|:---:|---|---|
+| **CTA Action Button** | `100` | 🟢 **CRITICAL (Never Dropped)** | Enforces $\ge 44\text{px}$ WCAG touch hitbox on touch surfaces |
+| **Headline Title** | `95` | 🟢 **CRITICAL (Never Dropped)** | Scales font size down to `minTextSize`, dynamic multi-line wrapping |
+| **Hero Media Visual** | `85` | 🟡 **Essential** | Scales down proportionally; dropped on micro/nano viewports |
+| **Price & Discount** | `75` | 🟡 **Essential** | Paired alongside CTA button to maximize conversion context |
+| **Callout Pill Badge** | `60` | 🔵 **Secondary** | Compacts to micro pill or overlays atop hero media |
+| **Subhead Copy** | `50` | 🔵 **Secondary** | Truncated with ellipsis; dropped if container height $< 350\text{px}$ |
+| **Social Proof Rating** | `40` | ⚪ **Auxiliary** | Dropped in compact/banner viewports |
+| **Branding Logo** | `35` | ⚪ **Auxiliary** | Compacts to icon-only mark or dropped on micro screens |
+| **Legal Disclaimer** | `15` | ⚪ **Auxiliary** | Dropped first under spatial budget constraints |
 
-### 4.4 Text-Measurement Aware Wrapping
-Instead of fixed character approximations, the engine incorporates [`TextMeasurer`](file:///c:/Users/chigu/OneDrive/Desktop/flam-frontend-rd-assignment/src/engine/text-measurer.ts) using `CanvasRenderingContext2D` font metrics. Text is simulated across lines at candidate font sizes, iteratively stepping down toward `surface.minTextSize` before applying ellipsis truncation.
+---
 
-### 4.5 Hard Surface Constraints & Collision Invariant
-- **WCAG 2.5.5 Touch Targets**: For touch surfaces, interactive bounding boxes are expanded to meet $\ge 44\text{px}\times 44\text{px}$ without altering visual text centering.
-- **Zero Collision Guarantee**: Every node pair $(A, B)$ is checked:
-$$\text{NoOverlap}(A, B) \iff (A.x + A.w \le B.x) \lor (B.x + B.w \le A.x) \lor (A.y + A.h \le B.y) \lor (B.y + B.h \le A.y)$$
+### 📏 4.4 Real-Time Text Sizing & Word-Wrap Simulation
+
+Unlike simplistic character count cutoffs, the engine uses [`TextMeasurer`](file:///c:/Users/chigu/OneDrive/Desktop/flam-frontend-rd-assignment/src/engine/text-measurer.ts) backed by offscreen canvas font metrics:
+1. Calculates exact pixel width of text at the target font size.
+2. Dynamically wraps text across candidate lines without overflow.
+3. Steps font size down towards `surface.minTextSize` if text exceeds container bounds.
+4. Adds elegant ellipsis (`...`) truncation only as a last resort.
+
+### 🛡️ 4.5 Touch Target & Collision Invariants
+- **WCAG 2.5.5 Touch Target Compliance**: Interactive touch targets on touch/kiosk surfaces are automatically expanded to $\ge 44\text{px}\times 44\text{px}$ without disturbing visual alignment.
+- **Zero Collision Guarantee (AABB Checks)**: Bounding boxes of all sibling nodes are verified to guarantee zero overlap across all surfaces:
+  $$\text{NoOverlap}(A, B) \iff (A.x + A.w \le B.x) \lor (B.x + B.w \le A.x) \lor (A.y + A.h \le B.y) \lor (B.y + B.h \le A.y)$$
+
+---
 
 ---
 

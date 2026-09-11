@@ -16,59 +16,40 @@
 
 The **Flam Adaptive Layout Engine** is designed from first principles as a **pure mathematical constraint-satisfaction solver**. It completely decouples **Ad Content Intent** from **Physical Surface Geometry** through an intermediate **Abstract Syntax Tree (AST)** representation.
 
-```
-+-----------------------------------------------------------------------------------+
-|                                1. INTENT LAYER                                    |
-|   +---------------------------------------+   +-------------------------------+   |
-|   |          Declarative AdSpec           |   |        Surface Profile        |   |
-|   |  - Elements (Role, Priority, Weights) |   |  - Dimensions (W, H, DPR)     |   |
-|   |  - Theme (Colors, Glassmorphism, Radii)|  |  - Insets, Mode, MinText/Tap  |   |
-|   +-------------------+-------------------+   +---------------+---------------+   |
-+-----------------------|---------------------------------------|-------------------+
-                        |                                       |
-                        +-------------------+-------------------+
-                                            |
-+-------------------------------------------v---------------------------------------+
-|                    2. COMPUTATION LAYER (Pure TypeScript)                         |
-|   +---------------------------------------------------------------------------+   |
-|   | Pass 1: Safe Boundary & Usable Area Budgeting                             |   |
-|   |   Wu = W - (Left + Right), Hu = H - (Top + Bottom), AR = Wu / Hu          |   |
-|   +-------------------------------------+-------------------------------------+   |
-|                                         |                                         |
-|   +-------------------------------------v-------------------------------------+   |
-|   | Pass 2: Piecewise Mathematical Topology Selection                         |   |
-|   |   Maps AR -> [banner-inline, split-horizontal, quadrant-grid, split-v]    |   |
-|   +-------------------------------------+-------------------------------------+   |
-|                                         |                                         |
-|   +-------------------------------------v-------------------------------------+   |
-|   | Pass 3: Deterministic Priority Degradation Cascade                        |   |
-|   |   Area Capacity Evaluation, Font Shrinkage, Secondary Element Eviction    |   |
-|   +-------------------------------------+-------------------------------------+   |
-|                                         |                                         |
-|   +-------------------------------------v-------------------------------------+   |
-|   | Pass 4: Offscreen Canvas Text Measurement & Dynamic Word Wrapping         |   |
-|   |   Real-time font metric evaluation & minTextSize enforcement              |   |
-|   +-------------------------------------+-------------------------------------+   |
-|                                         |                                         |
-|   +-------------------------------------v-------------------------------------+   |
-|   | Pass 5: Non-Overlapping Slot Packing & WCAG 2.5.5 Tap Target Audit        |   |
-|   |   Guarantees >=44px hitboxes & zero bounding box collisions              |   |
-|   +-------------------------------------+-------------------------------------+   |
-+-----------------------------------------|-----------------------------------------+
-                                          |
-+-----------------------------------------v-----------------------------------------+
-|                    3. INTERMEDIATE REPRESENTATION (AST)                           |
-|   +---------------------------------------------------------------------------+   |
-|   | ResolvedLayout { surfaceBounds, safeBounds, nodes: ResolvedNode[], trace }|   |
-|   +-------------------+-----------------------------------+-------------------+   |
-+-----------------------|-----------------------------------|-----------------------+
-                        |                                   |
-+-----------------------v-------------------+   +-----------v-----------------------+
-|      4A. React / DOM Renderer Backend     |   |    4B. HTML5 Canvas 2D Backend    |
-| - Glassmorphic styles & CSS variables     |   | - High-DPI Retina buffer rendering|
-| - 400ms FLIP layout morphing animations   |   | - Zero DOM dependency / Standalone|
-| - Interactive confetti particles on CTA   |   | - Offscreen video / WebGL export  |
-+-------------------------------------------+   +-----------------------------------+
+```mermaid
+flowchart TD
+    subgraph Layer1["1️⃣ INTENT LAYER"]
+        A["📄 Declarative Ad Spec\n• Content Elements & Priorities\n• Visual Theme Tokens & Badges"]
+        B["🖥️ Surface Hardware Profile\n• Width, Height, DPR & Safe Insets\n• Touch Mode & Min Text Size"]
+    end
+
+    subgraph Layer2["2️⃣ COMPUTATION SOLVER (Pure TypeScript)"]
+        direction TB
+        C["📐 Pass 1: Spatial Inset & Usable Area Budgeting"]
+        D["🧠 Pass 2: Aspect Ratio Topology Classification"]
+        E["📉 Pass 3: Priority Capacity & Degradation Engine"]
+        F["📏 Pass 4: Canvas Offscreen Font Measurement & Wrapping"]
+        G["🛡️ Pass 5: Slot Packing & WCAG 2.5.5 Touch Audit"]
+        C --> D --> E --> F --> G
+    end
+
+    subgraph Layer3["3️⃣ INTERMEDIATE REPRESENTATION (AST)"]
+        H["📦 ResolvedLayout AST\n• Pixel-Perfect 2D Bounds: { x, y, width, height }\n• Dynamic Font Sizes & Pre-wrapped Lines\n• Diagnostic Audit Trail & WCAG Compliant Hitboxes"]
+    end
+
+    subgraph Layer4["4️⃣ DUAL RENDERING ENGINES"]
+        I["🌐 React DOM Backend\n• Glassmorphic CSS Theme Engine\n• 400ms Smooth FLIP Transitions\n• Interactive Particle Confetti FX"]
+        J["🎨 HTML5 Canvas 2D Backend\n• Retina Hi-DPI Pixel Buffer Scaling\n• Hardware Safe Inset Guides\n• Standalone Video / WebGL Export"]
+    end
+
+    A & B ==> Layer2
+    Layer2 ==> Layer3
+    Layer3 ==> I & J
+
+    style Layer1 fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+    style Layer2 fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc
+    style Layer3 fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#f8fafc
+    style Layer4 fill:#701a75,stroke:#f472b6,stroke-width:2px,color:#f8fafc
 ```
 
 ---
