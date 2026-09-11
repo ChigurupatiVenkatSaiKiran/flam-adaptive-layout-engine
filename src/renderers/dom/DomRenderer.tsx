@@ -233,22 +233,22 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
       case 'price': {
         const priceEl = element as Extract<AdElement, { role: 'price' }>;
         return (
-          <div className="flex flex-col justify-center">
-            <div className="flex items-baseline gap-1.5">
+          <div className="flex flex-col justify-center h-full overflow-hidden">
+            <div className="flex items-baseline gap-1">
               <span
-                className="font-extrabold text-emerald-400 tracking-tight"
-                style={{ fontSize: `${computedFontSize || 20}px` }}
+                className="font-extrabold text-emerald-400 tracking-tight whitespace-nowrap"
+                style={{ fontSize: `${computedFontSize || 18}px`, lineHeight: 1 }}
               >
                 {priceEl.currentPrice}
               </span>
-              {priceEl.originalPrice && (
-                <span className="text-xs text-slate-400 line-through">
+              {priceEl.originalPrice && bounds.width > 70 && (
+                <span className="text-[10px] text-slate-400 line-through whitespace-nowrap">
                   {priceEl.originalPrice}
                 </span>
               )}
             </div>
-            {priceEl.discountText && bounds.height > 30 && (
-              <span className="text-[10px] font-semibold text-emerald-300/90 uppercase tracking-wider">
+            {priceEl.discountText && bounds.height > 24 && (
+              <span className="text-[9px] font-semibold text-emerald-300/90 uppercase tracking-wider truncate">
                 {priceEl.discountText}
               </span>
             )}
@@ -282,16 +282,17 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
           <button
             type="button"
             onClick={(e) => onCtaClick(e, node)}
-            className="w-full h-full rounded-xl font-bold tracking-wide shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group overflow-hidden relative"
+            className="w-full h-full rounded-xl font-bold tracking-wide shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] group overflow-hidden relative px-2"
             style={{
               background: `linear-gradient(135deg, ${theme.primaryColor} 0%, ${theme.accentColor} 100%)`,
               color: '#ffffff',
-              fontSize: `${computedFontSize || 15}px`,
-              boxShadow: `0 8px 24px -4px ${theme.primaryColor}66`
+              fontSize: `${computedFontSize || 13}px`,
+              boxShadow: `0 8px 24px -4px ${theme.primaryColor}66`,
+              whiteSpace: 'nowrap'
             }}
           >
-            <span className="relative z-10">{ctaEl.label}</span>
-            <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+            <span className="relative z-10 truncate">{ctaEl.label}</span>
+            <ArrowRight className="w-3.5 h-3.5 shrink-0 relative z-10 transition-transform duration-300 group-hover:translate-x-0.5" />
             <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </button>
         );

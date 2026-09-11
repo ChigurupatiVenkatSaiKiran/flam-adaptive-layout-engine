@@ -363,20 +363,28 @@ export class ConstraintSolver {
     plan: DegradationPlan,
     nodes: ResolvedNode[]
   ) {
-    const padding = Math.max(12, Math.min(24, bounds.width * 0.03));
-    const columnGap = Math.max(16, Math.min(32, bounds.width * 0.04));
+    const padding = Math.max(8, Math.min(24, bounds.width * 0.03));
+    const columnGap = Math.max(12, Math.min(32, bounds.width * 0.04));
     
-    // Left column: 44% width for media
-    const leftWidth = Math.floor((bounds.width - padding * 2 - columnGap) * 0.44);
-    const rightWidth = bounds.width - padding * 2 - columnGap - leftWidth;
-    
+    // Check if media visual is retained
+    const media = plan.retainedElements.find(e => e.role === 'media') as MediaElement | undefined;
+    const hasMedia = !!media;
+
+    let leftWidth = 0;
+    let rightWidth = bounds.width - padding * 2;
     const leftX = bounds.x + padding;
-    const rightX = leftX + leftWidth + columnGap;
+    let rightX = leftX;
+
+    if (hasMedia) {
+      leftWidth = Math.floor((bounds.width - padding * 2 - columnGap) * 0.44);
+      rightWidth = bounds.width - padding * 2 - columnGap - leftWidth;
+      rightX = leftX + leftWidth + columnGap;
+    }
+
     const topY = bounds.y + padding;
     const columnHeight = bounds.height - padding * 2;
 
-    // 1. Left Column: Media Visual
-    const media = plan.retainedElements.find(e => e.role === 'media') as MediaElement | undefined;
+    // 1. Left Column: Media Visual (if retained)
     if (media) {
       nodes.push({
         id: media.id,
@@ -478,7 +486,11 @@ export class ConstraintSolver {
     // Middle: Headline
     const headline = plan.retainedElements.find(e => e.role === 'headline') as HeadlineElement | undefined;
     if (headline) {
-      const targetFontSize = Math.max(surface.minTextSize, Math.min(32, columnHeight * 0.14));
+      const isUltraCompact = columnHeight < 140;
+      const targetFontSize = isUltraCompact
+        ? Math.max(surface.minTextSize, 14)
+        : Math.max(surface.minTextSize, Math.min(32, columnHeight * 0.14));
+
       const textMetrics = textMeasurer.measureAndWrapText(
         headline.text,
         rightWidth,
@@ -508,7 +520,7 @@ export class ConstraintSolver {
         placementReason: 'Primary value proposition headline',
         degradationStage: 'original'
       });
-      cursorY += textMetrics.totalHeight + 10;
+      cursorY += textMetrics.totalHeight + (isUltraCompact ? 4 : 10);
     }
 
     // Subhead (if retained)
@@ -552,13 +564,18 @@ export class ConstraintSolver {
     const legal = plan.retainedElements.find(e => e.role === 'legal') as LegalElement | undefined;
 
     const bottomY = topY + columnHeight;
-    const ctaHeight = Math.max(surface.minTapTarget, Math.min(52, columnHeight * 0.18));
-    const legalHeight = legal ? 16 : 0;
-    const actionRowY = bottomY - ctaHeight - legalHeight - 6;
+    const isCompactHeight = columnHeight < 140;
+    const ctaHeight = Math.max(surface.minTapTarget, Math.min(isCompactHeight ? 38 : 52, columnHeight * 0.35));
+    const legalHeight = legal ? 14 : 0;
+    const actionRowY = bottomY - ctaHeight - legalHeight;
 
     if (price && cta) {
-      const priceWidth = Math.floor(rightWidth * 0.38);
-      const ctaWidth = rightWidth - priceWidth - 12;
+      const gap = 8;
+      const priceWidth = Math.min(95, Math.floor(rightWidth * 0.36));
+      const ctaWidth = rightWidth - priceWidth - gap;
+
+      const priceFontSize = isCompactHeight ? Math.max(surface.minTextSize, 15) : Math.max(surface.minTextSize, 18);
+      const ctaFontSize = isCompactHeight ? Math.max(11, Math.min(13, ctaWidth * 0.09)) : Math.max(surface.minTextSize, 15);
 
       nodes.push({
         id: price.id,
@@ -574,12 +591,12 @@ export class ConstraintSolver {
         opacity: 1,
         scale: 1,
         zIndex: 2,
-        computedFontSize: Math.max(surface.minTextSize, 18),
+        computedFontSize: priceFontSize,
         placementReason: 'Price tag aligned with action CTA',
         degradationStage: 'original'
       });
 
-      const ctaX = rightX + priceWidth + 12;
+      const ctaX = rightX + priceWidth + gap;
       const tapTarget = this.computeTapTargetBounds({ x: ctaX, y: actionRowY, width: ctaWidth, height: ctaHeight }, surface.minTapTarget);
       nodes.push({
         id: cta.id,
@@ -595,7 +612,7 @@ export class ConstraintSolver {
         opacity: 1,
         scale: 1,
         zIndex: 3,
-        computedFontSize: Math.max(surface.minTextSize, 15),
+        computedFontSize: ctaFontSize,
         tapTargetBounds: tapTarget,
         isTapTargetCompliant: true,
         placementReason: 'Prominent interactive CTA button',
