@@ -149,57 +149,78 @@ The application will be live at **`http://localhost:5173`**.
 
 ---
 
-## 📐 4. Layout Algorithm & Constraint Resolution
+## 📐 4. Layout Algorithm & Multi-Stage Pipeline Architecture
 
-### 4.1 Step-by-Step Resolution Flow
+### 4.1 Master 8-Stage Resolution Pipeline
 
+```mermaid
+flowchart TD
+    subgraph S1["Stage 1: Intent & Schema Ingestion"]
+        A1["📄 Declarative AdSpec\n(Elements, Content, Roles, Priority P:1..100, Theme)"]
+        A2["🖥️ Physical Surface Profile\n(Width, Height, SafeInsets, Mode, MinTap, MinText)"]
+        A1 & A2 --> A3["🔍 Invariant Schema Validator\n(Guarantees unique IDs, valid priority ranges)"]
+    end
+
+    subgraph S2["Stage 2: Spatial Budgeting & Safe Insets"]
+        A3 --> B1["📐 Hardware Safe Area Insetter\nWu = W - (L+R), Hu = H - (T+B)"]
+        B1 --> B2["📊 Continuous Aspect Ratio Calculator\nAR = Wu / Hu, Area_u = Wu × Hu"]
+    end
+
+    subgraph S3["Stage 3: Continuous Topology Classification"]
+        B2 --> C1["🧠 Piecewise Macro Topology Selector"]
+        C1 -->|AR >= 2.8| C2["📺 banner-inline / compact-strip\n(Broadcast Lower-Third / Live Stream Strip)"]
+        C1 -->|1.3 <= AR < 2.8| C3["📱 split-horizontal\n(Landscape 16:9 / Wide Banners)"]
+        C1 -->|0.8 <= AR < 1.3| C4["🏢 quadrant-grid\n(Square Retail Kiosk 1:1)"]
+        C1 -->|AR < 0.8| C5["📱 split-vertical\n(Mobile Portrait 9:16 / Tall Stories)"]
+    end
+
+    subgraph S4["Stage 4: Priority Degradation & Capacity Planning"]
+        C2 & C3 & C4 & C5 --> D1["⚖️ Priority Sorter\nSort elements P(100..1) descending"]
+        D1 --> D2["📉 Capacity Constraint Evaluator\nSum(MinArea) <= 0.95 × Area_u"]
+        D2 -->|Budget Exceeded| D3["❌ Evict Low-Priority Elements\n(Legal -> Brand -> Rating -> Subhead)"]
+        D2 -->|Budget OK| D4["✅ Retain Full / Compact Elements\n(Headline & CTA strictly defended)"]
+    end
+
+    subgraph S5["Stage 5: Text Measurement & Typography Solver"]
+        D3 & D4 --> E1["📏 Canvas Offscreen Text Measurer\n(CanvasRenderingContext2D font metrics)"]
+        E1 --> E2["🔤 Iterative Font Sizer & Line Wrapper\n(Step down to minTextSize, apply ellipsis)"]
+    end
+
+    subgraph S6["Stage 6: Slot Allocation & Collision-Free Packing"]
+        E2 --> F1["📦 Slot Coordinate Allocator\n(Assigns absolute x, y, width, height)"]
+        F1 --> F2["🛡️ AABB Collision Detection Engine\n(Mathematically guarantees 0 overlaps)"]
+    end
+
+    subgraph S7["Stage 7: WCAG 2.5.5 Accessibility Synthesizer"]
+        F2 --> G1["👆 Touch Target Synthesizer\n(Expands CTA interactive hitbox to >=44px)"]
+        G1 --> G2["🌳 ResolvedLayout AST Output\n(Nodes, Computed Metrics, Diagnostic Audit Log)"]
+    end
+
+    subgraph S8["Stage 8: Decoupled Dual Rendering Backends"]
+        G2 --> H1["🌐 React DOM / CSS Renderer\n(Glassmorphism, 400ms FLIP morph, confetti)"]
+        G2 --> H2["🎨 HTML5 Canvas 2D Renderer\n(Retina DPR buffer, standalone canvas)"]
+        G2 --> H3["🔮 Future WebGL / 3D Spatial\n(Direct AR mesh projection)"]
+    end
+
+    classDef stageStyle fill:#0f172a,stroke:#6366f1,stroke-width:2px,color:#f8fafc;
+    classDef nodeStyle fill:#1e1b4b,stroke:#818cf8,stroke-width:1px,color:#e0e7ff;
+    class S1,S2,S3,S4,S5,S6,S7,S8 stageStyle;
 ```
-+------------------------+      +---------------------------+
-|  Declarative Ad Spec   |      | Surface Profile & Insets  |
-| (Content + Priorities) |      | (Aspect, Touch, Min Text) |
-+-----------+------------+      +-------------+-------------+
-            |                                 |
-            +----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           | 1. Safe Bounds & Spatial Budget  |
-           |    Usable = Surface - SafeInsets |
-           +-----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           | 2. Mathematical Topology Select  |
-           |    (Inline / Split-H / Grid / V) |
-           +-----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           | 3. Priority Degradation Cascade  |
-           |    (Drop / Scale / Compact)      |
-           +-----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           | 4. Text Measurement & Font Sizer |
-           |    (Canvas Offscreen Word-Wrap)  |
-           +-----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           | 5. Non-Overlapping Slot Packing  |
-           |    (WCAG Tap Target Enforcement) |
-           +-----------------+----------------+
-                             |
-                             v
-           +----------------------------------+
-           |       ResolvedLayout AST         |
-           +--------+----------------+--------+
-                    |                |
-         +----------v-------+  +-----v--------------+
-         | DOM / React View |  |  Canvas 2D View    |
-         +------------------+  +--------------------+
-```
+
+---
+
+### 📊 Comprehensive Pipeline Component Reference Table
+
+| Stage # | Pipeline Subsystem | Input Data | Core Mathematical / Algorithmic Operation | Output Intermediate Artifact | Invariants & Guarantees |
+|:---:|:---|:---|:---|:---|:---|
+| **1** | **Schema Ingestion & Validation** | Raw AdSpec, SurfaceProfile | Validates unique element IDs, bounds priority to $[1, 100]$, verifies required conversion roles. | Normalized `AdSpec`, `SurfaceProfile` | Throws compile/runtime errors on invalid combinations. |
+| **2** | **Spatial Budgeting** | Surface Dimensions, Insets | Subtracts safe insets: $W_u = W_s - (L+R)$, $H_u = H_s - (T+B)$, $\text{AR} = \frac{W_u}{H_u}$. | `safeBounds` $(x, y, W_u, H_u)$, `AR` | $W_u > 0, H_u > 0$; safe insets never breached. |
+| **3** | **Topology Classification** | Usable $\text{AR}, H_u$ | Continuous piecewise mapping into `banner-inline`, `split-horizontal`, `quadrant-grid`, `split-vertical`. | `TopologyAnalysis` object | Pure continuous function; zero hardcoded surface strings. |
+| **4** | **Priority Degradation** | Normalized Elements, $\text{Area}_u$ | Priority-ranked greedy evaluation; systematically evicts low priority if $\sum \text{MinArea} > 0.95 \cdot \text{Area}_u$. | Active `RetainedElements[]`, `DroppedElements[]` | Headline ($P=95$) and CTA ($P=100$) **never dropped**. |
+| **5** | **Text Measurement** | Raw Copy, Candidate Width | Offscreen Canvas 2D font metric calculation; iterative line wrapping down to `minTextSize`. | `TextMeasureResult` (lines, font size, height) | Minimum font size strictly respected per viewing distance. |
+| **6** | **Collision-Free Packing** | Slot Budgets, Measured Text | Assigns absolute coordinates $(x, y, w, h)$ with boundary clamping and margin budgeting. | `ResolvedNode[]` with absolute coordinates | Axis-Aligned Bounding Box (AABB) intersection $= \text{False}$. |
+| **7** | **WCAG Touch Synthesizer** | Active CTA Nodes, `minTapTarget` | Calculates symmetrical hit padding: $\text{pad} = \max(0, \frac{\text{minTap} - \text{dim}}{2})$. | `tapTargetBounds` $(\ge 44\text{px}\times 44\text{px})$ | WCAG 2.5.5 touch target compliance $= \text{Pass}$. |
+| **8** | **Dual Rendering Bridge** | `ResolvedLayout` AST | Decoupled consumption by React DOM (FLIP animations) and HTML5 Canvas 2D (Retina buffer). | Rendered UI / Canvas Elements | Zero layout calculations occur in rendering backends. |
 
 ### 4.2 Mathematical Topology Classification
 The macro layout topology $T$ is derived continuously from the usable aspect ratio ($\text{AR} = \frac{W_u}{H_u}$):
