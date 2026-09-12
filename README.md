@@ -25,9 +25,9 @@
 
 <br/>
 
-| 👤 Candidate Name | 🎯 Position Applied | 🏢 Target Company | 📅 Submission Date |
-|:---:|:---:|:---:|:---:|
-| **Chigurupati Venkat Sai Kiran** | **Frontend R&D Engineer** | **Flam Systems Inc.** | September 2026 |
+| 👤 Candidate Name | 🎓 Programme | 🆔 Registration Number | 🎯 Position Applied | 🏢 Target Company | 📅 Submission Date |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Chigurupati Venkat Sai Kiran** | M.Tech CSE (AI & ML) | **25MAI1006** | **Frontend R&D Engineer** | **FlamAI** | September 2026 |
 
 <br/>
 
@@ -602,7 +602,7 @@ While the engine completely satisfies and exceeds all assignment specifications,
 
 <div align="center">
 
-### ⚡ Built with Precision for the Flam Systems Frontend R&D Assignment
+### ⚡ Built with Precision for the FlamAI Frontend R&D Assignment
 
 **Chigurupati Venkat Sai Kiran** · [GitHub](https://github.com/ChigurupatiVenkatSaiKiran) · [Live Demo](https://flam-adaptive-layout-engine.netlify.app/)
 

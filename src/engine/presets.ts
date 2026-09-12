@@ -101,7 +101,7 @@ export const PRESET_SPECS: AdSpec[] = [
         id: 'legal-1',
         role: 'legal',
         priority: 15,
-        text: '© 2026 Flam Systems Inc. Requires compatible WebXR device. Terms apply.',
+        text: '© 2026 FlamAI. Requires compatible WebXR device. Terms apply.',
         dropThreshold: 40
       }
     ]

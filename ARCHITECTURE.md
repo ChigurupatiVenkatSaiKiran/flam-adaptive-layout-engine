@@ -260,5 +260,5 @@ const resolved = resolveLayout(mySpec, inCarDash);
 ---
 
 <div align="center">
-  <b>MIT License © 2026 Flam Systems Inc. Frontend R&D Submission</b>
+  <b>MIT License © 2026 FlamAI. Frontend R&D Submission</b>
 </div>
