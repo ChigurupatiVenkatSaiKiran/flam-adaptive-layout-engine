@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=30&pause=1000&color=00D4FF&center=true&vCenter=true&width=980&lines=Flam+Adaptive+Layout+Engine+for+Multi-Surface+Ads;Constraint-Driven+Spatial+Resolution+%7C+Zero+Breakpoints;Deterministic+AST+Intermediate+Representation+%7C+<0.2ms;Dual+Rendering%3A+React+19+Glassmorphic+DOM+%2B+Canvas+2D;WCAG+2.5.5+Touch+Compliant+%7C+100%25+Tested+Invariants" alt="Flam Adaptive Layout Engine Typing Header" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=30&pause=1000&color=00D4FF&center=true&vCenter=true&width=980&lines=Flam+Adaptive+Layout+Engine+for+Multi-Surface+Ads;Constraint-Driven+Spatial+Resolution+%7C+Zero+Breakpoints;Deterministic+AST+Intermediate+Representation+%7C+Sub-0.2ms;Dual+Rendering%3A+React+19+Glassmorphic+DOM+%2B+Canvas+2D;WCAG+2.5.5+Touch+Compliant+%7C+100%25+Tested+Invariants" alt="Flam Adaptive Layout Engine Typing Header" />
 
 <br/>
 
