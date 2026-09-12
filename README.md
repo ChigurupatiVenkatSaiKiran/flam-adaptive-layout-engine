@@ -5,6 +5,7 @@
 ### *Constraint-Driven Spatial Ad Resolution Engine for Mixed Reality, Broadcast, and Ambient Displays*
 
 <p align="center">
+  <a href="https://flam-adaptive-layout-engine.netlify.app/"><img src="https://img.shields.io/badge/Live_Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white"/></a>
   <a href="https://github.com/ChigurupatiVenkatSaiKiran/flam-adaptive-layout-engine"><img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white"/></a>
   <img src="https://img.shields.io/badge/TypeScript-5.7.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white"/>
   <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
@@ -32,7 +33,7 @@
 <div align="center">
 
 ### 🌐 Live Interactive Studio
-👉 **[Launch Live Demo: flam-adaptive-layout-engine.vercel.app](https://github.com/ChigurupatiVenkatSaiKiran/flam-adaptive-layout-engine)** 👈
+👉 **[Launch Live Demo: flam-adaptive-layout-engine.netlify.app](https://flam-adaptive-layout-engine.netlify.app/)** 👈
 
 **Experience real-time constraint resolution across Mobile Portrait, Mobile Landscape, Broadcast Lower-Third, Square Kiosks, and Live 5th Surface Freeform Resizing!**
 
