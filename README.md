@@ -338,9 +338,9 @@ The layout engine verifies:
 $$\forall i \ne j, \quad \text{Intersect}(N_i, N_j) = \text{False} \quad (\text{hasCollisions} = \text{false})$$
 
 #### Invariant 2: WCAG 2.5.5 Touch Hitbox Bounding Box
-For any surface where $\text{interactionMode} \in \{\text{touch}, \text{kiosk\_touch}\}$:
-$$\text{Width}(N_{\text{cta.tapTarget}}) \ge \max(N_{\text{cta}}.w, \, \text{minTapTarget}) \ge 44\text{px}$$
-$$\text{Height}(N_{\text{cta.tapTarget}}) \ge \max(N_{\text{cta}}.h, \, \text{minTapTarget}) \ge 44\text{px}$$
+For any surface where interaction mode is touch-enabled (`touch` or `kiosk_touch`):
+$$\text{Width}(N_{\text{cta}}) \ge \max(W_{\text{cta}}, \, 44\text{px}) \ge 44\text{px}$$
+$$\text{Height}(N_{\text{cta}}) \ge \max(H_{\text{cta}}, \, 44\text{px}) \ge 44\text{px}$$
 
 ---
 
