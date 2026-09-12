@@ -102,8 +102,7 @@ Enforces strict $\ge 44\text{px}$ touch hitboxes on touch surfaces and $\ge 18\t
 ## 📌 Table of Contents
 
 - [💡 Problem Statement & Core Philosophy](#-problem-statement--core-philosophy)
-- [🏛️ Master System Architecture Diagram](#️-master-system-architecture-diagram)
-- [🔄 End-to-End 5-Pass Pipeline Architecture](#-end-to-end-5-pass-pipeline-architecture)
+- [🏛️ System Architecture & Pipeline](#️-system-architecture--pipeline)
 - [🧠 Algorithmic & Mathematical Formulations](#-algorithmic--mathematical-formulations)
   - [1. Spatial Inset & Usable Area Budgeting](#1-spatial-inset--usable-area-budgeting)
   - [2. Continuous Aspect Ratio Topology Classification](#2-continuous-aspect-ratio-topology-classification)
@@ -117,7 +116,10 @@ Enforces strict $\ge 44\text{px}$ touch hitboxes on touch surfaces and $\ge 18\t
 - [📁 Repository Structure](#-repository-structure)
 - [🧰 Technology Stack](#-technology-stack)
 - [🚀 Quick Start & Local Execution](#-quick-start--local-execution)
-- [📜 Engineering Quality & Design Guarantees](#-engineering-quality--design-guarantees)
+- [📜 Assignment Requirements Compliance & Scorecard](#-assignment-requirements-compliance--scorecard)
+- [🎁 Bonus Points Verification Matrix (All 5 Implemented)](#-bonus-points-verification-matrix-all-5-implemented)
+- [⏱️ Time Spent & AI Tools Disclosure](#️-time-spent--ai-tools-disclosure)
+- [⚠️ Known Limitations & Future Extensibility](#️-known-limitations--future-extensibility)
 
 ---
 
