@@ -149,99 +149,73 @@ This layout engine reformulates ad rendering as a **deterministic 5-pass geometr
 
 ---
 
-## 🏛️ Master System Architecture Diagram
+## 🏛️ System Architecture & Pipeline
 
-Below is the formal system architecture detailing the 4-layer decoupled design from input declarations to dual rendering output:
-
-```mermaid
-flowchart TD
-    subgraph L1[" Layer 1: Declarative Intent & Surface Constraints "]
-        direction TB
-        A1["📄 Declarative Ad Spec (AdSpec)\n• 9 Content Elements (Roles & Priorities P: 1..100)\n• Asset URLs (Hero 16:9, Square, Transparent PNG)\n• Visual Theme Tokens & Product Badges"]
-        A2["🖥️ Physical Surface Hardware Profile (SurfaceProfile)\n• Physical Dimensions: Ws × Hs (px)\n• Safe Insets: I = (Top, Right, Bottom, Left)\n• Interaction Mode: Touch / Pointer / Kiosk\n• Viewing Distance: Near (18in) / Far (10ft)"]
-    end
-
-    subgraph L2[" Layer 2: Core Constraint-Satisfaction Solver (Pure TypeScript) "]
-        direction TB
-        B1["📐 Pass 1: Usable Area & Inset Budgeting\nWu = Ws - (Left+Right) | Hu = Hs - (Top+Bottom)\nContinuous Usable Aspect Ratio AR = Wu / Hu"]
-        B2["🧠 Pass 2: Continuous Topology Classifier\nT(AR, Hu) → split-vert | split-horiz | banner | quadrant"]
-        B3["📉 Pass 3: Priority Capacity Planning Cascade\nSum(Area_req) <= 0.95 * Area_u | Drop Legal → Brand → Rating"]
-        B4["📏 Pass 4: Dynamic Canvas 2D Text Measurer\nSub-pixel line wrapping & binary-search font sizing"]
-        B5["🛡️ Pass 5: Slot Packing & WCAG 2.5.5 Audit\nAABB Collision Verification | Tap Target Hitbox >= 44px"]
-        B1 --> B2 --> B3 --> B4 --> B5
-    end
-
-    subgraph L3[" Layer 3: Normalized Intermediate Representation (AST) "]
-        direction TB
-        C1["📦 ResolvedLayout AST (Pure JSON Data Structure)\n• rootBounds: { x: 0, y: 0, width: Ws, height: Hs }\n• safeBounds: { x: I_left, y: I_top, width: Wu, height: Hu }\n• nodes: Array<LayoutNode> [ { id, role, bounds: {x,y,w,h}, computedFontSize, visible, zIndex } ]\n• diagnostics: { solverTimeMs, hasCollisions: false, wcagTouchCompliant: true, droppedElements }"]
-    end
-
-    subgraph L4[" Layer 4: Decoupled Dual Rendering Backends "]
-        direction TB
-        D1["🌐 React DOM Backend (DomRenderer.tsx)\n• Glassmorphic CSS Theme Engine (Backdrop Blur)\n• 400ms Smooth FLIP Coordinate Transitions\n• Interactive Confetti Particle FX on CTA Click\n• Live DOM Debug Overlays (Safe Area & Bounding Boxes)"]
-        D2["🎨 HTML5 Canvas 2D Backend (CanvasRenderer.tsx)\n• Sub-pixel Pixel-Perfect Direct AST Painting\n• Retina Hi-DPI Pixel Buffer Scaling (dpr: 2x / 3x)\n• Zero DOM Layout Thrashing & 60 FPS Standalone\n• Production Offscreen Video / WebGL Texture Export"]
-    end
-
-    L1 ==> L2
-    L2 ==> L3
-    L3 ==> D1 & D2
-
-    style L1 fill:#0B132B,stroke:#38BDF8,stroke-width:2px,color:#FFFFFF
-    style L2 fill:#1C1950,stroke:#818CF8,stroke-width:2px,color:#FFFFFF
-    style L3 fill:#064E3B,stroke:#10B981,stroke-width:2px,color:#FFFFFF
-    style L4 fill:#4C0519,stroke:#F43F5E,stroke-width:2px,color:#FFFFFF
-```
-
----
-
-## 🔄 End-to-End 5-Pass Pipeline Architecture
-
-The sequential execution lifecycle of the layout resolver is illustrated in the detailed pipeline diagram below:
+### 🔄 Architectural Paradigm: Traditional CSS vs. Flam Spatial Engine
 
 ```mermaid
 flowchart LR
-    subgraph P1["1️⃣ Inset Budgeting"]
+    subgraph Bad["❌ Traditional Responsive Design (Flawed)"]
         direction TB
-        P1_IN["Surface Dimensions\n(Ws, Hs) + Insets (I)"] --> P1_MATH["Calculate Usable Bounds\nWu = Ws - (L + R)\nHu = Hs - (T + B)"]
-        P1_MATH --> P1_OUT["Usable Area & AR\nAR = Wu / Hu"]
+        B1["1D Viewport Width (@media)"] --> B2["Hardcoded Breakpoint Branches\n(if width <= 768px)"]
+        B2 --> B3["Text Overflows · Node Overlaps\nUndersized Touch Targets (< 44px)"]
     end
 
-    subgraph P2["2️⃣ Topology Solver"]
+    subgraph Good["🟢 Flam Constraint-Driven Engine (Our Solution)"]
         direction TB
-        P2_IN["Usable AR & Hu"] --> P2_DEC{"Continuous AR\nDecision Engine"}
-        P2_DEC -->|"AR >= 2.8"| P2_T1["banner-inline /\ncompact-strip"]
-        P2_DEC -->|"1.3 <= AR < 2.8"| P2_T2["split-horizontal"]
-        P2_DEC -->|"0.8 <= AR < 1.3"| P2_T3["quadrant-grid"]
-        P2_DEC -->|"AR < 0.8"| P2_T4["split-vertical"]
+        G1["2D Geometric Constraints\n(Dimensions + Safe Insets + AR + Viewing Dist)"] --> G2["Deterministic 5-Pass Math Solver\n(Sub-0.2ms · Pure TypeScript · Zero DOM)"]
+        G2 --> G3["Normalized Intermediate AST\n(Zero Overlaps · WCAG AAA · Dual Renderers)"]
     end
 
-    subgraph P3["3️⃣ Priority Degradation"]
-        direction TB
-        P3_IN["AdSpec Elements (E)\nSorted Priority DESC"] --> P3_CHECK{"Spatial Capacity\nBudget Check"}
-        P3_CHECK -->|"Fits Budget"| P3_KEEP["Retain All 9 Nodes"]
-        P3_CHECK -->|"Space Deficit"| P3_DROP["Drop Low-P Nodes\nLegal (15) → Brand (35)\n→ Rating (40) → Subhead (50)"]
+    Bad -.->|"Replaced by"| Good
+
+    style Bad fill:#450a0a,stroke:#ef4444,stroke-width:2px,color:#ffffff
+    style Good fill:#022c22,stroke:#10b981,stroke-width:2px,color:#ffffff
+```
+
+<br/>
+
+### 🏗️ Master End-to-End Execution Pipeline
+
+Below is the complete single-pass mathematical pipeline converting declarative ad intent into pixel-perfect multi-surface rendering in **$< 0.2\text{ms}$**:
+
+```mermaid
+flowchart TD
+    subgraph IN["1️⃣ INPUT INTENT & SURFACE SPECIFICATION"]
+        A["📄 Declarative AdSpec\n9 Elements · Priorities P: 1..100 · Assets · Badges"]
+        B["🖥️ SurfaceProfile\nDimensions (Ws × Hs) · Insets (Top,Right,Bottom,Left) · Modality · Distance"]
     end
 
-    subgraph P4["4️⃣ Font Fitting"]
+    subgraph SOLVER["2️⃣ PURE MATHEMATICAL CONSTRAINT SOLVER (Zero-DOM TypeScript)"]
         direction TB
-        P4_IN["Slot Dimensions\n(W_slot, H_slot)"] --> P4_MEASURE["Offscreen Canvas\nmeasureText()"]
-        P4_MEASURE --> P4_WRAP["Greedy Word-Wrap &\nBinary Search Font Sizing\nclamp(minText, S*, maxText)"]
+        S1["📐 Pass 1: Inset & Area Budgeting\nWu = Ws - (Left+Right) · Hu = Hs - (Top+Bottom) · AR = Wu / Hu"]
+        S2["🧠 Pass 2: Continuous Topology Classifier\nPiecewise Function T(AR, Hu) → split-vert | split-horiz | banner | quadrant"]
+        S3["📉 Pass 3: Priority Capacity Cascade\nSum(Area_req) <= 0.95 * Area_u · Drop Legal → Brand → Rating"]
+        S4["📏 Pass 4: Offscreen Canvas Font Measurer\nmeasureText() Sub-pixel Binary Search Font Sizing & Line Wrapping"]
+        S5["🛡️ Pass 5: Slot Packing & WCAG 2.5.5 Audit\nAABB Collision Non-Overlap Verification · Touch Hitbox >= 44px"]
+        
+        S1 --> S2 --> S3 --> S4 --> S5
     end
 
-    subgraph P5["5️⃣ Audit & Packing"]
-        direction TB
-        P5_IN["Node Coordinates\n{x, y, width, height}"] --> P5_AABB{"AABB Collision\nIntersect == False"}
-        P5_AABB --> P5_WCAG["WCAG 2.5.5 Padding\nTouch Hitbox >= 44px"]
-        P5_WCAG --> P5_AST["Emit Pure AST"]
+    subgraph AST["3️⃣ NORMALIZED INTERMEDIATE REPRESENTATION (AST)"]
+        C["📦 ResolvedLayout AST (Pure JSON Data)\n• 2D Bounds {x, y, w, h} · Computed Typography · Z-Index\n• WCAG 44px Hitboxes · Diagnostics { solverTimeMs, hasCollisions: false }"]
     end
 
-    P1 ==> P2 ==> P3 ==> P4 ==> P5
+    subgraph RENDER["4️⃣ DECOUPLED DUAL RENDERING BACKENDS"]
+        R1["🌐 React DOM Backend (DomRenderer.tsx)\n• Glassmorphic CSS Theme · 400ms FLIP Morph Animations\n• Confetti Particle FX · DOM Debug Overlays"]
+        R2["🎨 HTML5 Canvas 2D Backend (CanvasRenderer.tsx)\n• Retina Hi-DPI Pixel Buffer Scaling (dpr: 2x/3x)\n• 60 FPS Standalone · Video & WebGL Texture Export"]
+    end
 
-    style P1 fill:#0F172A,stroke:#38BDF8,stroke-width:1.5px,color:#FFFFFF
-    style P2 fill:#1E1B4B,stroke:#818CF8,stroke-width:1.5px,color:#FFFFFF
-    style P3 fill:#3B0764,stroke:#A855F7,stroke-width:1.5px,color:#FFFFFF
-    style P4 fill:#064E3B,stroke:#10B981,stroke-width:1.5px,color:#FFFFFF
-    style P5 fill:#7C2D12,stroke:#F97316,stroke-width:1.5px,color:#FFFFFF
+    IN ==> SOLVER
+    SOLVER ==> AST
+    AST ==> R1 & R2
+
+    style IN fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#ffffff
+    style SOLVER fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ffffff
+    style AST fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#ffffff
+    style RENDER fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#ffffff
+    style R1 fill:#1e293b,stroke:#38bdf8,stroke-width:1.5px,color:#ffffff
+    style R2 fill:#3b0764,stroke:#f43f5e,stroke-width:1.5px,color:#ffffff
 ```
 
 ---
