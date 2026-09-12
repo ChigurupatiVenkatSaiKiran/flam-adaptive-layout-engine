@@ -584,22 +584,6 @@ While the engine completely satisfies and exceeds all assignment specifications,
 
 ---
 
-## 🎤 Live Interview Defense & Technical Q&A
-
-### Q1: How does the engine resolve a 5th unseen surface without hardcoded code changes?
-> **Answer:** The solver never branches on surface IDs. Instead, it computes the continuous aspect ratio $\text{AR} = W_u / H_u$ and passes it through the continuous piecewise classifier $T(\text{AR}, H_u)$. Any arbitrary dimension (e.g. $730\times 310\text{px}$) falls into a continuous mathematical bucket and calculates proportional 2D node allocations dynamically.
-
-### Q2: Why are Headline ($P=95$) and CTA ($P=100$) guaranteed never to drop or clip?
-> **Answer:** The degradation cascade separates elements into **Critical Conversion Anchors ($P \ge 90$)** and **Secondary Auxiliary Elements ($P < 90$)**. Secondary elements drop progressively (Legal $\to$ Brand $\to$ Rating $\to$ Subhead $\to$ Media) to yield 100% of spatial capacity to Headline and CTA. Dynamic text fitting then binary-searches the optimal font size down to `minTextSize` to guarantee zero bounding overflow.
-
-### Q3: How is typography measured without causing DOM layout thrashing?
-> **Answer:** Rather than reading from the DOM (which triggers expensive browser reflows), `text-measurer.ts` utilizes an **offscreen Canvas 2D context** (`OffscreenCanvas` / hidden `<canvas>`). It computes font widths and line wraps in memory in $< 0.05\text{ms}$ with zero DOM reflow.
-
-### Q4: How is the renderer decoupled from the solver?
-> **Answer:** The solver produces a normalized JSON **Abstract Syntax Tree (AST)** (`ResolvedLayout`). It has zero imports from React or DOM APIs. Both `DomRenderer.tsx` and `CanvasRenderer.tsx` consume the AST as a pure data source.
-
----
-
 <div align="center">
 
 ### ⚡ Built with Precision for the FlamAI Frontend R&D Assignment
